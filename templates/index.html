@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Merger Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <div class="editor-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-dot"></div>
+        <h1>Video Merger Studio</h1>
+      </div>
+      <div class="topbar-actions">
+        <button id="save-preset-btn" class="btn btn-secondary">Save Preset</button>
+        <button id="load-preset-btn" class="btn btn-secondary">Load Preset</button>
+        <button id="merge-videos" class="btn btn-primary">Export Video</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="panel panel-left">
+        <div class="panel-head">
+          <h2>Media Bin</h2>
+          <p>Upload and order your clips</p>
+        </div>
+
+        <div class="drop-zone" id="drop-zone">
+          <div class="drop-zone-content">
+            <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v20M2 12h20M5 8l7-6 7 6M5 16l7 6 7-6"/>
+            </svg>
+            <p class="drop-text">Drag and drop video files</p>
+            <label class="file-input-label">
+              Browse Files
+              <input type="file" id="video-upload" multiple accept="video/*" hidden>
+            </label>
+          </div>
+        </div>
+
+        <div class="videos-list" id="videos-list"></div>
+      </aside>
+
+      <section class="panel panel-center">
+        <div class="panel-head">
+          <h2>Preview Monitor</h2>
+          <p>Your current edit layout</p>
+        </div>
+
+        <div class="monitor">
+          <div class="monitor-screen">
+            <video id="preview-player" class="preview-player" playsinline preload="metadata"></video>
+            <div class="monitor-overlay">
+              <span class="tag" id="preview-tag">No clip loaded</span>
+              <p id="status" class="status-text"></p>
+            </div>
+          </div>
+
+          <div class="transport">
+            <button id="preview-prev" class="btn btn-secondary transport-btn" type="button">Prev</button>
+            <button id="preview-play" class="btn btn-secondary transport-btn" type="button">Play</button>
+            <button id="preview-next" class="btn btn-secondary transport-btn" type="button">Next</button>
+            <button id="preview-mute" class="btn btn-secondary transport-btn" type="button">Mute</button>
+            <span id="preview-time" class="timecode">00:00 / 00:00</span>
+          </div>
+
+          <input type="range" id="preview-scrubber" class="scrubber" min="0" max="100" step="0.1" value="0">
+
+          <div class="progress-bar-container">
+            <div class="progress-bar" id="progress"></div>
+          </div>
+        </div>
+
+        <div class="timeline-wrap">
+          <div class="timeline-head">
+            <h3>Timeline</h3>
+            <p id="timeline-total">Total 00:00</p>
+          </div>
+          <div class="timeline" id="timeline">
+            <p class="timeline-empty">Videos will appear here</p>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel panel-right">
+        <div class="panel-head">
+          <h2>Inspector</h2>
+          <p>Video, transition and audio settings</p>
+        </div>
+
+        <div class="settings-section">
+          <h3>Video</h3>
+          <div class="form-group">
+            <label for="preset">Resolution</label>
+            <select id="preset" class="form-select">
+              <option value="original" selected>Original (match first video)</option>
+              <option value="480p">480p (854x480)</option>
+              <option value="720p">720p (1280x720)</option>
+              <option value="1080p">1080p (1920x1080)</option>
+              <option value="1440p">1440p (2560x1440)</option>
+              <option value="720x1280">720x1280 (Vertical)</option>
+              <option value="1080x1920">1080x1920 (Vertical)</option>
+              <option value="1440x2560">1440x2560 (Vertical)</option>
+              <option value="4K">4K (3840x2160)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="filter-preset">Filter</label>
+            <select id="filter-preset" class="form-select">
+              <option value="">None</option>
+              <option value="grayscale">Grayscale</option>
+              <option value="blur">Blur</option>
+              <option value="brightness">Brightness +20%</option>
+              <option value="contrast">Contrast +30%</option>
+              <option value="sepia">Sepia</option>
+              <option value="vivid">Vivid</option>
+              <option value="sharpen">Sharpen</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="output-name">Output Filename</label>
+            <input type="text" id="output-name" class="form-input" value="merged.mp4" placeholder="merged.mp4">
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Transitions</h3>
+          <div class="form-group">
+            <label for="transition">Effect</label>
+            <select id="transition" class="form-select">
+              <option value="none" selected>None (cut)</option>
+              <option value="fade">Fade</option>
+              <option value="wipeleft">Wipe Left</option>
+              <option value="wiperight">Wipe Right</option>
+              <option value="slideleft">Slide Left</option>
+              <option value="slideright">Slide Right</option>
+              <option value="circleopen">Circle Open</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="transition-duration">Duration (sec)</label>
+            <input type="number" id="transition-duration" class="form-input" min="0.1" max="2" step="0.1" value="0.6">
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Audio Mix</h3>
+          <div class="form-group">
+            <label for="background-music">Background Music</label>
+            <input type="file" id="background-music" accept="audio/*" class="form-file">
+            <span class="file-name" id="background-music-name"></span>
+          </div>
+          <div class="form-group">
+            <label for="audio-mode">Audio Mode</label>
+            <select id="audio-mode" class="form-select">
+              <option value="original" selected>Original Audio</option>
+              <option value="mix">Mix Original + Music</option>
+              <option value="music">Music Only</option>
+            </select>
+          </div>
+          <div class="inline-grid">
+            <div class="form-group">
+              <label for="original-volume">Original Vol</label>
+              <input type="number" id="original-volume" class="form-input" min="0" max="2" step="0.1" value="1.0">
+            </div>
+            <div class="form-group">
+              <label for="music-volume">Music Vol</label>
+              <input type="number" id="music-volume" class="form-input" min="0" max="2" step="0.1" value="0.35">
+            </div>
+          </div>
+          <div class="checkbox-line">
+            <input type="checkbox" id="ducking" class="form-checkbox">
+            <label for="ducking">Auto Ducking</label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Assets</h3>
+          <div class="form-group">
+            <label for="intro">Intro Video</label>
+            <input type="file" id="intro" accept="video/*" class="form-file">
+            <span class="file-name" id="intro-name"></span>
+          </div>
+          <div class="form-group">
+            <label for="outro">Outro Video</label>
+            <input type="file" id="outro" accept="video/*" class="form-file">
+            <span class="file-name" id="outro-name"></span>
+          </div>
+          <div class="form-group">
+            <label for="subtitles">Subtitles (.srt)</label>
+            <input type="file" id="subtitles" accept=".srt" class="form-file">
+            <span class="file-name" id="subtitles-name"></span>
+          </div>
+          <div class="form-group">
+            <label for="watermark-img">Watermark Image</label>
+            <input type="file" id="watermark-img" accept="image/*" class="form-file">
+            <span class="file-name" id="watermark-img-name"></span>
+          </div>
+          <div class="form-group">
+            <label for="watermark-text">Watermark Text</label>
+            <input type="text" id="watermark-text" class="form-input" placeholder="Brand / title">
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
