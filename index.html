@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Merger Pro</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M2 12h20M5.5 5.5l13 13M18.5 5.5l-13 13"/>
+          </svg>
+          <h1>Video Merger Pro</h1>
+        </div>
+        <p class="subtitle">Merge, edit, and enhance your videos</p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="grid-layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+          <div class="sidebar-card">
+            <h2 class="card-title">Your Videos</h2>
+            <p class="card-subtitle">Drop videos or click to browse</p>
+
+            <div class="drop-zone" id="drop-zone">
+              <div class="drop-zone-content">
+                <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v20M2 12h20M5 8l7-6 7 6M5 16l7 6 7-6"/>
+                </svg>
+                <p class="drop-text">Drag & drop videos here</p>
+                <p class="drop-hint">or</p>
+                <label class="file-input-label">
+                  Click to select
+                  <input type="file" id="video-upload" multiple accept="video/*" hidden>
+                </label>
+              </div>
+            </div>
+
+            <div class="videos-list" id="videos-list">
+              <!-- Videos will be added here -->
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Editor Area -->
+        <section class="editor">
+          <!-- Settings Card -->
+          <div class="settings-card card">
+            <h2 class="card-title">Video Settings</h2>
+
+            <div class="settings-grid">
+              <div class="form-group">
+                <label for="preset">Resolution</label>
+                <select id="preset" class="form-select">
+                  <option value="720p">720p (1280x720)</option>
+                  <option value="1080p" selected>1080p (1920x1080)</option>
+                  <option value="4K">4K (3840x2160)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="filter-preset">Filter Preset</label>
+                <select id="filter-preset" class="form-select">
+                  <option value="">None</option>
+                  <option value="grayscale">Grayscale</option>
+                  <option value="blur">Blur</option>
+                  <option value="brightness">Brightness +20%</option>
+                  <option value="contrast">Contrast +30%</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="intro">Intro Video</label>
+                <input type="file" id="intro" accept="video/*" class="form-file">
+                <span class="file-name" id="intro-name"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="outro">Outro Video</label>
+                <input type="file" id="outro" accept="video/*" class="form-file">
+                <span class="file-name" id="outro-name"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="subtitles">Subtitles (.srt)</label>
+                <input type="file" id="subtitles" accept=".srt" class="form-file">
+                <span class="file-name" id="subtitles-name"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="watermark-img">Watermark Image</label>
+                <input type="file" id="watermark-img" accept="image/*" class="form-file">
+                <span class="file-name" id="watermark-img-name"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="watermark-text">Watermark Text</label>
+                <input type="text" id="watermark-text" class="form-input" placeholder="Enter watermark text...">
+              </div>
+
+              <div class="form-group">
+                <label for="output-name">Output Filename</label>
+                <input type="text" id="output-name" class="form-input" placeholder="merged.mp4" value="merged.mp4">
+              </div>
+            </div>
+
+            <div class="preset-controls">
+              <button id="save-preset-btn" class="btn btn-secondary">Save Preset</button>
+              <button id="load-preset-btn" class="btn btn-secondary">Load Preset</button>
+            </div>
+          </div>
+
+          <!-- Timeline Card -->
+          <div class="timeline-card card">
+            <h2 class="card-title">Timeline Preview</h2>
+            <div class="timeline" id="timeline">
+              <p class="timeline-empty">Videos will appear here</p>
+            </div>
+          </div>
+
+          <!-- Merge Controls -->
+          <div class="merge-controls card">
+            <button id="merge-videos" class="btn btn-primary btn-lg">
+              <span>Merge Videos</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+            </button>
+
+            <div class="progress-section">
+              <div class="progress-bar-container">
+                <div class="progress-bar" id="progress"></div>
+              </div>
+              <p class="status-text" id="status"></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
